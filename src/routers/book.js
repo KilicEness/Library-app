@@ -1,11 +1,10 @@
 const express = require('express')
 const Book = require('../models/book')
-const auth = require('../middleware/auth')
-const router = new express.Router()
+const router = express.Router()
 
 
 //Create books
-router.post('/books', auth, async (req, res) => {
+router.post('/', async (req, res) => {
     const book = new Book({
         ...req.body,
         owner: req.user._id
@@ -23,7 +22,7 @@ router.post('/books', auth, async (req, res) => {
 //GET /books?completed=true
 //GET /books?limit=5&skip=10
 //GET /books?sortBy=createdAt:desc
-router.get('/books', auth, async (req, res) => {
+router.get('/', async (req, res) => {
     const match = {}
     const sort = {}
 
@@ -53,7 +52,7 @@ router.get('/books', auth, async (req, res) => {
 })
 
 //Read books by user id
-router.get('/books/:id', auth, async (req, res) => {
+router.get('/:id', async (req, res) => {
     const _id = req.params.id
 
     try {
@@ -70,7 +69,7 @@ router.get('/books/:id', auth, async (req, res) => {
 })
 
 //Update books by id
-router.patch('/books/:id', auth, async (req, res) => {
+router.patch('/:id', async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['description', 'completed']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -95,7 +94,7 @@ router.patch('/books/:id', auth, async (req, res) => {
 })
 
 //Delete books by id
-router.delete('/books/:id', auth, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const book = await Book.findOneAndDelete({ _id: req.params._id, owner: req.user._id })
 
@@ -108,6 +107,6 @@ router.delete('/books/:id', auth, async (req, res) => {
     }
 })
 
-
+//a
 
 module.exports = router

@@ -1,11 +1,11 @@
 const express = require('express')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
-const router = new express.Router()
+const router = express.Router()
 
 
 //Create users
-router.post('/users', async (req, res) => {
+router.post('/register', async (req, res) => {
     const user = new User(req.body)
 
     try {
@@ -18,7 +18,7 @@ router.post('/users', async (req, res) => {
 })
 
 //Login user
-router.post('/users/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
@@ -30,7 +30,7 @@ router.post('/users/login', async (req, res) => {
 })
 
 //Logout user just one session
-router.post('/users/logout', auth, async (req, res) => {
+router.post('/logout', auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token
@@ -44,7 +44,7 @@ router.post('/users/logout', auth, async (req, res) => {
 })
 
 //Logout all sessions
-router.post('/users/logoutAll', auth, async (req, res) => {
+router.post('/logoutAll', auth, async (req, res) => {
     try {
         req.user.tokens = []
         await req.user.save()
@@ -55,12 +55,12 @@ router.post('/users/logoutAll', auth, async (req, res) => {
 })
 
 //Read users
-router.get('/users/me', auth, async (req, res) => {
+router.get('/', auth, async (req, res) => {
     res.send(req.user)
 })
 
 //Update user
-router.patch('/users/me', auth, async (req, res) => {
+router.patch('/', auth, async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'email', 'password', 'age']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -79,7 +79,7 @@ router.patch('/users/me', auth, async (req, res) => {
 })
 
 //Delete user
-router.delete('/users/me', auth, async (req, res) => {
+router.delete('/', auth, async (req, res) => {
     try {
         await User.deleteOne({ _id: req.user._id })
         res.send('USer deleted succesfully.')
