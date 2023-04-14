@@ -3,49 +3,65 @@ const jwt = require('jsonwebtoken')
 const User = require('../../src/models/user')
 const Book = require('../../src/models/book')
 
+//create userOne to database
 const userOneId = new mongoose.Types.ObjectId()
 const userOne = {
     _id: userOneId,
     name: 'Ross',
     email: 'ross@gmail.com',
-    password: '123456',
+    password: '1234567',
     tokens: [{
         token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
     }]
 }
 
+//create userTwo to database
 const userTwoId = new mongoose.Types.ObjectId()
 const userTwo = {
-    _id: userTwoId,
+    _id: userOneId,
     name: 'Rachel',
     email: 'rachel@gmail.com',
-    password: '123456',
+    password: '12345678',
     tokens: [{
         token: jwt.sign({ _id: userTwoId }, process.env.JWT_SECRET)
     }]
 }
 
+//create bookOne for userOne to database
 const bookOne = {
-    _id: new mongoose.Types.ObjectId(),
-    name: 'Animal Farm',
-    completed: false,
-    owner: userOne._id
-}
-
-const bookTwo = {
-    _id: new mongoose.Types.ObjectId(),
+    _id: new mongoose.Types.ObjectId,
     name: '1984',
-    completed: true,
-    owner: userOne._id
+    author: 'George Orwell',
+    completed: false,
+    owner: userOneId._id
 }
 
+//create bookTwo for userOne to database
+const bookTwo = {
+    _id: new mongoose.Types.ObjectId,
+    name: 'Satranc',
+    author: 'Stefan Zweig',
+    completed: true,
+    owner: userOneId._id
+}
+
+//create bookThree for userTwo to database
+const bookThree = {
+    _id: new mongoose.Types.ObjectId,
+    name: 'Donusum',
+    author: 'Franz Kafka',
+    owner: userTwoId._id
+}
+
+//Setup database for each test
 const setupDatabase = async () => {
     await User.deleteMany()
     await Book.deleteMany()
     await new User(userOne).save()
     await new User(userTwo).save()
-    await new Task(bookOne).save()
-    await new Task(bookTwo).save()
+    await new Book(bookOne).save()
+    await new Book(bookTwo).save()
+    await new Book(bookThree).save()
 }
 
 module.exports = {
@@ -53,7 +69,8 @@ module.exports = {
     userOne,
     userTwoId,
     userTwo,
-    bookkOne,
+    bookOne,
     bookTwo,
+    bookThree,
     setupDatabase
 }
