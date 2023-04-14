@@ -12,13 +12,7 @@ const userSchema = new mongoose.Schema({
         trim: true
     },
     birthDay: {
-        type: Date,
-        default: 0,
-       /*  validate(value) {
-            if (value < 0) {
-                throw new Error('Age must be positive number')
-            }
-        } */
+        type: Date
     },
     email: {
         type: String,

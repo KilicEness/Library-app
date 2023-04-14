@@ -100,3 +100,28 @@ test('Should not delete account for unauthenticated user', async () => {
         .send()
         .expect(401)
 })
+
+//Update user test
+test('Should update valid user fields', async () => {
+    await request(app)
+        .patch('/users/')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({
+            name: 'Breeze'
+        })
+        .expect(200)
+    //Validation of changed
+    const user = await User.findById(userOneId)
+    expect(user.name).toEqual('Breeze')
+})
+
+//Wrong update user test
+test('Should not update invalid user fields', async () => {
+    await request(app)
+        .patch('/users/')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({
+            location: 'Ankara'
+        })
+        .expect(400)
+})
