@@ -18,7 +18,7 @@ const userOne = {
 //create userTwo to database
 const userTwoId = new mongoose.Types.ObjectId()
 const userTwo = {
-    _id: userOneId,
+    _id: userTwoId,
     name: 'Rachel',
     email: 'rachel@gmail.com',
     password: '12345678',
@@ -29,28 +29,28 @@ const userTwo = {
 
 //create bookOne for userOne to database
 const bookOne = {
-    _id: new mongoose.Types.ObjectId,
+    _id: new mongoose.Types.ObjectId(),
     name: '1984',
     author: 'George Orwell',
     completed: false,
-    owner: userOneId._id
+    owner: userOne._id
 }
 
 //create bookTwo for userOne to database
 const bookTwo = {
-    _id: new mongoose.Types.ObjectId,
+    _id: new mongoose.Types.ObjectId(),
     name: 'Satranc',
     author: 'Stefan Zweig',
     completed: true,
-    owner: userOneId._id
+    owner: userOne._id
 }
 
 //create bookThree for userTwo to database
 const bookThree = {
-    _id: new mongoose.Types.ObjectId,
+    _id: new mongoose.Types.ObjectId(),
     name: 'Donusum',
     author: 'Franz Kafka',
-    owner: userTwoId._id
+    owner: userTwo._id
 }
 
 //Setup database for each test

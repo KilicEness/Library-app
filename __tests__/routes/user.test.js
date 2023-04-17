@@ -26,7 +26,7 @@ test('Should register a new user', async () => {
         },
         token: user.tokens[0].token
     })
-    expect(user.password).not.toBe('1234567')
+    expect(user.password).not.toBe('123456')
 })
 
 //Test login request

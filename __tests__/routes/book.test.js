@@ -40,3 +40,13 @@ test('Should fetch users book', async () => {
     expect(response.body.length).toEqual(2)
 })
 
+//Testing other users cant delete users book
+test('Should not delete other users book', async () => {
+    const response = await request(app)
+        .delete(`/books/${bookOne._id}`)
+        .set('Authorization', `Bearer ${userTwo.tokens[0].token}`)
+        .send()
+        .expect(404)
+    const book = await Book.findById(bookOne._id)
+    expect(book).not.toBeNull()
+})
