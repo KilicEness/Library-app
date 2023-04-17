@@ -10,7 +10,7 @@ const {
     bookTwo,
     bookThree,
     setupDatabase
-    } = require('../fixtures/db')
+} = require('../fixtures/db')
 
 //delete db for each test 
 beforeEach(setupDatabase)
@@ -38,6 +38,30 @@ test('Should fetch users book', async () => {
         .send()
         .expect(200)
     expect(response.body.length).toEqual(2)
+})
+
+//Testing update books
+test('Should update users books', async () => {
+    const response = await request(app)
+        .patch('/books/' + bookOne._id)
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({
+            completed: true
+        })
+        .expect(200)
+    const book = await Book.findById(bookOne._id)
+    expect(book.completed).toEqual(true)
+})
+
+//Testing delete books
+test('Should delete users own book', async () => {
+    const response = await request(app)
+        .delete('/books/' + bookOne._id)
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send()
+        .expect(200)
+    const book = await Book.findById(bookOne._id)
+    expect(book).toBeNull()
 })
 
 //Testing other users cant delete users book

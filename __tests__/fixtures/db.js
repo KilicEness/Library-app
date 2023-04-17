@@ -72,5 +72,5 @@ module.exports = {
     bookOne,
     bookTwo,
     bookThree,
-    setupDatabase
+    setupDatabase,
 }
