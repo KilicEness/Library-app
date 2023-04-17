@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
+const { MongoMemoryServer } = require('mongodb-memory-server')
 const User = require('../../src/models/user')
 const Book = require('../../src/models/book')
 
@@ -64,6 +65,42 @@ const setupDatabase = async () => {
     await new Book(bookThree).save()
 }
 
+
+let mongo = undefined
+
+//Create database using mongodb memory server package
+const setUp = async () => {
+    mongo = await MongoMemoryServer.create()
+    const url = mongo.getUri()
+
+    await mongoose.connect(url, {
+        useNewUrlParser: true,
+    })
+}
+
+//Drop database entirely, close and stop the connection
+const dropDatabase = async () => {
+    if (mongo) {
+        await mongoose.connection.dropDatabase()
+        await mongoose.connection.close()
+        await mongo.stop()
+    }
+}
+
+//Remove all collections from database
+const dropCollections = async () => {
+    if (mongo) {
+        const collections = mongoose.connection.collections;
+
+        for (const key in collections) {
+            const collection = collections[key]
+            await collection.deleteMany()
+        }
+    }
+}
+
+
+
 module.exports = {
     userOneId,
     userOne,
@@ -73,4 +110,7 @@ module.exports = {
     bookTwo,
     bookThree,
     setupDatabase,
+    setUp,
+    dropDatabase,
+    dropCollections
 }
