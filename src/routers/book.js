@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-//Read books by user id
+//Read books by own id
 router.get('/:id', async (req, res) => {
     const _id = req.params.id
 
@@ -96,7 +96,7 @@ router.patch('/:id', async (req, res) => {
 //Delete books by id
 router.delete('/:id', async (req, res) => {
     try {
-        const book = await Book.findOneAndDelete({ _id: req.params._id, owner: req.user._id })
+        const book = await Book.findOneAndDelete({ _id: req.params.id, owner: req.user._id })
 
         if (!book) {
             return res.status(404).send()

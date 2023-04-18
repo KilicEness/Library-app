@@ -40,6 +40,15 @@ test('Should fetch users book', async () => {
     expect(response.body.length).toEqual(2)
 })
 
+//Testing read books by own id
+test('Should fetch books when given own id', async () => {
+    const response = await request(app)
+        .get('/books/' + bookThree._id)
+        .set('Authorization', `Bearer ${userTwo.tokens[0].token}`)
+        .send()
+        .expect(200)
+})
+
 //Testing update books
 test('Should update users books', async () => {
     const response = await request(app)
