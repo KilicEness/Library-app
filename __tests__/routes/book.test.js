@@ -62,6 +62,17 @@ test('Should update users books', async () => {
     expect(book.completed).toEqual(true)
 })
 
+//Testing if user try to update another users book
+test('Should not update other users book', async () => {
+    const response = await request(app)
+        .patch('/books/' + bookTwo._id)
+        .set('Authorization', `Bearer ${userTwo.tokens[0].token}`)
+        .send({
+            completed: true
+        })
+        .expect(404)
+})
+
 //Testing delete books
 test('Should delete users own book', async () => {
     const response = await request(app)
@@ -71,6 +82,16 @@ test('Should delete users own book', async () => {
         .expect(200)
     const book = await Book.findById(bookOne._id)
     expect(book).toBeNull()
+})
+
+//Testing delete an unauthenticated user 
+test('Sould not delete book if unauthenticated', async () => {
+    const response = request(app)
+        .delete('/books/' + bookThree._id)
+        .send()
+        .expect(401)
+    const book = await Book.findById(bookThree._id)
+    expect(book).not.toBeNull()
 })
 
 //Testing other users cant delete users book
