@@ -26,7 +26,38 @@ test('Should register a new user', async () => {
         },
         token: user.tokens[0].token
     })
+    //ensure password is hashed before storing in database
     expect(user.password).not.toBe('123456')
+})
+
+//Test for invalid register
+test('Should not register user with invalid name/email/password', async () => {
+    await request(app)
+        .post('/users/register')
+        .send({
+            name: '',
+            email: 'blank@gmail.com',
+            password: 'blank111'
+        })
+        .expect(400)
+    
+    await request(app)
+        .post('/users/register')
+        .send({
+            name: '@forgotten boy',
+            email: 'forgotternBoyatgmail.com',
+            password: 'forget123'
+        })
+        .expect(400)
+
+    await request(app)
+        .post('/users/register')
+        .send({
+            name: 'shortPassword guy',
+            email: 'shortPassword@gmail.com',
+            password: '123'
+        })
+        .expect(400)
 })
 
 //Test login request

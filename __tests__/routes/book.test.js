@@ -49,6 +49,26 @@ test('Should fetch books when given own id', async () => {
         .expect(200)
 })
 
+//Testing get just completed books
+test('Should fetch only completed books', async () => {
+    const response = await request(app)
+        .get('/books?completed=true')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send()
+        .expect(200)
+
+    expect(response.body.length).toBe(1)
+})
+
+//Testing get uncompleted books
+test('Should fetch only uncompleted books', async () => {
+    const response = await request(app)
+        .get('/books?completed=false')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .expect(200)
+    expect(response.body.length).toBe(1)
+})
+
 //Testing update books
 test('Should update users books', async () => {
     const response = await request(app)
