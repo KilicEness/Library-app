@@ -15,11 +15,15 @@ const bookSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    owner: {
+    ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
-    }
+    },
+    ownerName: {
+        type: String,
+        ref: 'User'
+    },
 }, {
     timestamps: true
 })

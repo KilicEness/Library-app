@@ -7,7 +7,8 @@ const router = express.Router()
 router.post('/', async (req, res) => {
     const book = new Book({
         ...req.body,
-        owner: req.user._id
+        ownerId: req.user._id,
+        ownerName: req.user.name
     })
 
     try {
@@ -23,31 +24,37 @@ router.post('/', async (req, res) => {
 //GET /books?limit=5&skip=10
 //GET /books?sortBy=createdAt:desc
 router.get('/', async (req, res) => {
-    const match = {}
-    const sort = {}
+    // const match = {}
+    // const sort = {}
 
-    if (req.query.completed) {
-        match.completed = req.query.completed === 'true'
-    }
+    // if (req.query.completed) {
+    //     match.completed = req.query.completed === 'true'
+    // }
 
-    if (req.query.sortBy) {
-        const parts = req.query.sortBy.split(':')
-        sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
-    }
+    // if (req.query.sortBy) {
+    //     const parts = req.query.sortBy.split(':')
+    //     sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+    // }
 
+    // try {
+    //     await req.user.populate({
+    //         path: 'books',
+    //         match,
+    //         options: {
+    //             limit: parseInt(req.query.limit),
+    //             skip: parseInt(req.query.skip),
+    //             sort
+    //         }
+    //     })
+    //     res.send(req.user.books)
+    // } catch (e) {
+    //     res.status(500).send(e)
+    // }
     try {
-        await req.user.populate({
-            path: 'books',
-            match,
-            options: {
-                limit: parseInt(req.query.limit),
-                skip: parseInt(req.query.skip),
-                sort
-            }
-        })
-        res.send(req.user.books)
+        const books = await Book.find({});
+        res.status(200).send(books);
     } catch (e) {
-        res.status(500).send(e)
+        res.status(400).json({message: e.message});
     }
 })
 
@@ -56,7 +63,7 @@ router.get('/:id', async (req, res) => {
     const _id = req.params.id
 
     try {
-        const book = await Book.findOne({ _id, owner: req.user._id })
+        const book = await Book.findOne({ _id, ownerId: req.user._id })
 
         if (!book) {
             return res.status(404).send()
@@ -79,7 +86,7 @@ router.patch('/:id', async (req, res) => {
     }
 
     try {
-        const book = await Book.findOne({ _id: req.params.id, owner: req.user._id })
+        const book = await Book.findOne({ _id: req.params.id, ownerId: req.user._id })
 
         if (!book) {
             return res.status(404).send()
@@ -96,7 +103,7 @@ router.patch('/:id', async (req, res) => {
 //Delete books by id
 router.delete('/:id', async (req, res) => {
     try {
-        const book = await Book.findOneAndDelete({ _id: req.params.id, owner: req.user._id })
+        const book = await Book.findOneAndDelete({ _id: req.params.id, ownerId: req.user._id })
 
         if (!book) {
             return res.status(404).send()
