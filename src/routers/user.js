@@ -63,6 +63,18 @@ router.get('/', auth, async (req, res) => {
     }
 })
 
+//Get user by id
+router.get('/:id', auth, async (req,res) => {
+    try {
+        const userId = req.params.id;
+        //const user = await User.findOne({ _id: userId })
+        const user = await User.findById(userId)
+        res.status(200).send(user)
+    } catch (e) {
+        res.status(400).json({message: e.message});
+    }
+})
+
 //Update user
 router.patch('/', auth, async (req, res) => {
     const updates = Object.keys(req.body)
