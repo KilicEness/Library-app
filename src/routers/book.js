@@ -66,15 +66,26 @@ router.get('/:id', async (req, res) => {
         const book = await Book.findOne({ _id, ownerId: req.user._id })
 
         if (!book) {
-            return res.status(404).send()
+            return res.status(404).send();
         }
 
         res.send(book)
     } catch (e) {
-        res.status(404).send()
+        res.status(404).json({message: e.message});
     }
 })
 
+// Get user's books
+router.get('/:id/books', async (req, res) => {
+    try {
+      const ownerId = req.params.id;
+      const books = await Book.find({ ownerId });
+      res.status(200).json(books);
+    } catch (e) {
+      res.status(400).json({ message: e.message });
+    }
+  });
+  
 //Update books by id
 router.patch('/:id', async (req, res) => {
     const updates = Object.keys(req.body)
