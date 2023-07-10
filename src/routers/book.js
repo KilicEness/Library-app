@@ -1,5 +1,6 @@
 const express = require('express')
 const Book = require('../models/book')
+const auth = require('../middleware/auth')
 const router = express.Router()
 
 
@@ -54,7 +55,7 @@ router.get('/', async (req, res) => {
         const books = await Book.find({});
         res.status(200).send(books);
     } catch (e) {
-        res.status(400).json({message: e.message});
+        res.status(400).json({ message: e.message });
     }
 })
 
@@ -71,21 +72,32 @@ router.get('/:id', async (req, res) => {
 
         res.send(book)
     } catch (e) {
-        res.status(404).json({message: e.message});
+        res.status(404).json({ message: e.message });
     }
 })
 
 // Get user's books
 router.get('/:id/books', async (req, res) => {
     try {
-      const ownerId = req.params.id;
-      const books = await Book.find({ ownerId });
-      res.status(200).json(books);
+        const ownerId = req.params.id;
+        const books = await Book.find({ ownerId });
+        res.status(200).json(books);
     } catch (e) {
-      res.status(400).json({ message: e.message });
+        res.status(400).json({ message: e.message });
     }
-  });
-  
+});
+
+// Get user own books on the navlink
+router.get('/:id/myBooks', auth, async (req, res) => {
+    try {
+        const books = await Book.find({ ownerId: req.user._id });
+        res.status(200).json(books);
+    } catch (e) {
+        res.status(400).json({ message: e.message });
+    }
+});
+
+
 //Update books by id
 router.patch('/:id', async (req, res) => {
     const updates = Object.keys(req.body)
