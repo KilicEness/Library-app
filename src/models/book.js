@@ -20,10 +20,10 @@ const bookSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
-    ownerName: {
-        type: String,
-        ref: 'User'
-    },
+    // ownerName: {
+    //     type: String,
+    //     ref: 'User'
+    // },
 }, {
     timestamps: true
 })

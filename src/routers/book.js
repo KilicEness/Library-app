@@ -1,6 +1,7 @@
 const express = require('express')
 const Book = require('../models/book')
 const auth = require('../middleware/auth')
+const User = require('../models/user')
 const router = express.Router()
 
 
@@ -9,7 +10,7 @@ router.post('/', async (req, res) => {
     const book = new Book({
         ...req.body,
         ownerId: req.user._id,
-        ownerName: req.user.name
+        // ownerName: req.user.name
     })
 
     try {
@@ -52,7 +53,11 @@ router.get('/', async (req, res) => {
     //     res.status(500).send(e)
     // }
     try {
-        const books = await Book.find({});
+        const books = await Book.find({}).lean();
+        for (let book of books) {
+            const user = await User.findOne({_id: book.ownerId}).lean();
+            book.ownerName = user.name;
+        }
         res.status(200).send(books);
     } catch (e) {
         res.status(400).json({ message: e.message });
@@ -64,12 +69,14 @@ router.get('/:id', async (req, res) => {
     const _id = req.params.id
 
     try {
-        const book = await Book.findOne({ _id, ownerId: req.user._id })
-
+        const book = await Book.findOne({ _id, ownerId: req.user._id }).lean()
+        
         if (!book) {
             return res.status(404).send();
         }
 
+        const user = await User.findOne({_id: book.ownerId});
+        book.ownerName = user.name;
         res.send(book)
     } catch (e) {
         res.status(404).json({ message: e.message });
@@ -80,7 +87,11 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/books', async (req, res) => {
     try {
         const ownerId = req.params.id;
-        const books = await Book.find({ ownerId });
+        const books = await Book.find({ ownerId }).lean();
+        const user = await User.find({_id: req.user_id});
+        books.forEach((book) => {
+            book.ownerName = user.name;
+        })
         res.status(200).json(books);
     } catch (e) {
         res.status(400).json({ message: e.message });
@@ -90,7 +101,12 @@ router.get('/:id/books', async (req, res) => {
 // Get user own books on the navlink
 router.get('/:id/myBooks', auth, async (req, res) => {
     try {
-        const books = await Book.find({ ownerId: req.user._id });
+        const books = await Book.find({ ownerId: req.user._id }).lean();
+        const user = await User.findOne({_id: req.user._id});
+        // const booksWithOwnerNames = books.map((book) => ({ ...book._doc, ownerName: user.name }))
+        books.forEach((book) => {
+            book.ownerName = user.name;
+        })
         res.status(200).json(books);
     } catch (e) {
         res.status(400).json({ message: e.message });
@@ -100,8 +116,13 @@ router.get('/:id/myBooks', auth, async (req, res) => {
 
 //Update books by id
 router.patch('/:id', async (req, res) => {
+    for (let field in req.body) {
+        if (req.body[field] === null) {
+            delete req.body[field]
+        }
+    }
     const updates = Object.keys(req.body)
-    const allowedUpdates = ['description', 'completed']
+    const allowedUpdates = ['name', 'author', 'completed']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
 
     if (!isValidOperation) {
